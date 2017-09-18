@@ -1,12 +1,19 @@
 package main.forms;
 
+import main.extra.Extra;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
+
+import static main.fromImge.WorkerWithImages.getFileExtension;
 
 /**
  * Created by Андрей on 17.09.2017.
@@ -14,6 +21,8 @@ import java.io.ObjectOutputStream;
 public class ImageFrame extends JFrame{
 
     public static String expansion = null;
+    public static File fileRez = null;
+    public static BufferedImage bf = null;
 
 
     private static JLabel jlabel = new JLabel();
@@ -44,19 +53,18 @@ public class ImageFrame extends JFrame{
     private class SaveListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            JFileChooser fc = new JFileChooser();
-            if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                try {
-                    File f = new File("rez.png");
-                    FileOutputStream fileStream = new FileOutputStream(fc.getSelectedFile());
-                    ObjectOutputStream os = new ObjectOutputStream(fileStream);
-                    os.writeObject(f);
-                }
-                catch (Exception e1) {
-                    System.out.println("Что-то пошло не так...");
-                }
+            try {
+                ImageIO.write(bf, expansion, fileRez);
+                JDialog jd = new JDialog();
+                JOptionPane.showMessageDialog(jd,
+                        "Success",
+                        "Differences saved",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException e1) {
+                Extra.showError("Error","Something went wrong. File not saved");
             }
         }
     }
+
 
 }

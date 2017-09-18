@@ -153,6 +153,8 @@ public class MainFrame extends JFrame {
 
                 ImageFrame.expansion = getFileExtension(first);
                 ImageFrame.addInJLable(new File("rez.png"));
+                ImageFrame.fileRez = second;
+                ImageFrame.bf = result;
 
                 ImageFrame imageFrame = new ImageFrame();
 

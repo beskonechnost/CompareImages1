@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
+import java.util.List;
 
 /**
  * Created by Андрей on 14.09.2017.
@@ -172,6 +174,7 @@ public class WorkerWithImages {
                             if(forCirculatings[ii][jj].getPixelEntersAnotherPath()==1){
                                 forCirculatings[ii][jj].setPixelEntersAnotherPath(count);
                             }
+
                             if(forCirculatings[ii][jj].getPixelEntersAnotherPath()>1){
                                 count1 = forCirculatings[ii][jj].getPixelEntersAnotherPath();
                                 for (int iii = 0; iii < row; iii++) {
@@ -182,6 +185,8 @@ public class WorkerWithImages {
                                     }
                                 }
                             }
+
+
                         }
                     }
 
@@ -189,6 +194,63 @@ public class WorkerWithImages {
                 }
             }
         }
+        /*
+        List<Integer> groupsInImage = new ArrayList<>();
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                int g = 0;
+                if (forCirculatings[i][j].getPixelEntersAnotherPath() > 1) {
+                    g = forCirculatings[i][j].getPixelEntersAnotherPath();
+                }
+                boolean f = true;
+                for(int k : groupsInImage) {
+                    if(k==g || g==0){
+                        f = false;
+                    }
+                }
+                if(f)groupsInImage.add(g);
+            }
+        }
+
+        for(int k : groupsInImage) {
+            for (int i = 0; i < row; i++) {
+                for (int j = 0; j < col; j++) {
+
+                    int hig = i - 1;
+                    if (hig < 0) hig = 0;
+                    int bot = i + 1;
+                    if (bot > row - 1) bot = row - 1;
+                    int left = j - 1;
+                    if (left < 0) left = 0;
+                    int right = j + 1;
+                    if (right > col - 1) right = col - 1;
+
+                    for (int ii = hig; ii <= bot; ii++) {
+                        for (int jj = left; jj <= right; jj++) {
+                            if(forCirculatings[ii][jj].getPixelEntersAnotherPath()!=0 && forCirculatings[ii][jj].getPixelEntersAnotherPath()!=k){
+                                int count1 = forCirculatings[ii][jj].getPixelEntersAnotherPath();
+                                for (int iii = 0; iii < row; iii++) {
+                                    for (int jjj = 0; jjj < col; jjj++) {
+                                        if(forCirculatings[iii][jjj].getPixelEntersAnotherPath()==count1){
+                                            forCirculatings[iii][jjj].setPixelEntersAnotherPath(k);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        */
+        //test
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                System.out.print(forCirculatings[i][j].getPixelEntersAnotherPath());
+            }
+            System.out.println("#");
+        }
+
         return forCirculatings;
     }
 
