@@ -60,6 +60,7 @@ public class ImageFrame extends JFrame{
                         "Success",
                         "Differences saved",
                         JOptionPane.INFORMATION_MESSAGE);
+
             } catch (IOException e1) {
                 Extra.showError("Error","Something went wrong. File not saved");
             }
