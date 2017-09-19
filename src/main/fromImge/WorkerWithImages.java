@@ -9,8 +9,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.util.List;
 
 /**
  * Created by Андрей on 14.09.2017.
@@ -26,6 +24,15 @@ public class WorkerWithImages {
             if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
                 return fileName.substring(fileName.lastIndexOf(".") + 1);
             else return "";
+        }
+    }
+    public static String getFilePath(File file) {
+        if(file==null) {
+            return "";
+        }else {
+            String filePath = file.getPath();
+            String fileNmae = file.getName();
+            return filePath.substring(0, filePath.length()-fileNmae.length());
         }
     }
 
@@ -53,6 +60,18 @@ public class WorkerWithImages {
             Extra.showError("File error/Select other file", "File Error");
         }
         return bufferedImage;
+    }
+
+    public static File smallerImage(File f1, File f2){
+        BufferedImage bf1 = getBufferedImage(f1);
+        BufferedImage bf2 = getBufferedImage(f2);
+        long size1 = bf1.getHeight()*bf1.getWidth();
+        long size2 = bf2.getHeight()*bf2.getWidth();
+        if(size1<size2){
+            return f1;
+        }else{
+            return f2;
+        }
     }
 
     public static int[] commonImageSizes(BufferedImage bufferedImage1, BufferedImage bufferedImage2){
@@ -84,6 +103,8 @@ public class WorkerWithImages {
         Graphics2D graphics = common.createGraphics();
         graphics.drawImage(bufferedImage, 0, 0, commonSize[0], commonSize[1], null);
         graphics.dispose();
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
         BufferedImage bi = null;
 
@@ -148,16 +169,18 @@ public class WorkerWithImages {
         int col=forCirculatings[0].length;
         int row=forCirculatings.length;
 
+        int sizeGroup = Extra.groupSize(row, col);
+        //Finds different pixels and their border
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
 
-                int hig = i - 5;
+                int hig = i - sizeGroup;
                 if (hig < 0) hig = 0;
-                int bot = i + 5;
+                int bot = i + sizeGroup;
                 if (bot > row - 1) bot = row - 1;
-                int left = j - 5;
+                int left = j - sizeGroup;
                 if (left < 0) left = 0;
-                int right = j + 5;
+                int right = j + sizeGroup;
                 if (right > col - 1) right = col - 1;
 
                 if(forCirculatings[i][j].isPixelIsNotEmpty() && !forCirculatings[i][j].isPixelProcessed()){
@@ -181,7 +204,7 @@ public class WorkerWithImages {
                 }
             }
         }
-        //Selecting rows without distinction
+        //Selecting rows without distinction. mark them with zone 2
         for(int i = 0; i<row; i++){
             boolean flag = true;
             for (int j = 0; j < col; j++) {
@@ -198,7 +221,8 @@ public class WorkerWithImages {
             }
 
         }
-        //Selecting column without distinction
+        //Selecting column without distinction. mark them with zone 3
+        //pixels that lie in zones 2 and 3 at the same time, mark 4
         for(int j = 0; j<col; j++){
             boolean flag = true;
             for(int i = 0; i<row; i++){
@@ -221,6 +245,7 @@ public class WorkerWithImages {
             }
         }
 
+        //Eliminates the formed zones without distinctions (at intersections of zones with differences) and replaces them with group 3
         for(int i = 0; i<row; i++){
             if(forCirculatings[i][0].getPixelEntersAnotherPath()==2 || forCirculatings[i][0].getPixelEntersAnotherPath()==4){
                 continue;
@@ -265,7 +290,7 @@ public class WorkerWithImages {
                 }
             }
         }
-
+        //Let's outline the contour zone 9
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
                 if(!forCirculatings[i][j].isPixelTrue()) {
@@ -308,57 +333,10 @@ public class WorkerWithImages {
             }
         }
 
-
-
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col; j++) {
-                System.out.print(forCirculatings[i][j].getPixelEntersAnotherPath());
-            }
-            System.out.println("#");
-        }
-
         return forCirculatings;
     }
     ///////////////////
-    /*
-    public static ForCirculating[][] bezel (ForCirculating[][] forCirculatings){
-        int wwi = ForCirculating.count;
 
-        int col = forCirculatings[0].length;
-        int row = forCirculatings.length;
-
-        for(int k=1; k<wwi; k++) {
-
-            int hig = row;
-            int bot = 0;
-            int left = col;
-            int right = 0;
-
-            for (int i = 0; i < row; i++) {
-                for (int j = 0; j < col; j++) {
-                    if(forCirculatings[i][j].getPixelEntersAnotherPath()==k){
-                        if(i<hig) hig = i;
-                        if(i>bot) bot = i;
-                        if(j<left) left = j;
-                        if(j>right) right = j;
-                    }
-                }
-            }
-
-            for(int i = hig; i<=bot; i++){
-                forCirculatings[i][left].setPixelEntersAnotherPath(-1);
-                forCirculatings[i][right].setPixelEntersAnotherPath(-1);
-            }
-
-            for(int j = left; j<=right; j++){
-                forCirculatings[hig][j].setPixelEntersAnotherPath(-1);
-                forCirculatings[bot][j].setPixelEntersAnotherPath(-1);
-            }
-        }
-
-        return forCirculatings;
-    }
-    */
     public static BufferedImage drawLines (ForCirculating[][] forCirculatings, BufferedImage bf){
         WritableRaster raster = bf.getRaster();
         for(int i = 0; i<raster.getWidth(); i++){

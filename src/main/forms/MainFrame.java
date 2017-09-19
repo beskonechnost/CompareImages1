@@ -4,7 +4,6 @@ import main.extra.Extra;
 import main.extra.ForCirculating;
 import main.fromImge.WorkerWithImages;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
@@ -12,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 import static main.fromImge.WorkerWithImages.*;
 
@@ -23,6 +21,8 @@ public class MainFrame extends JFrame {
 
     File first = null;
     File second = null;
+    File resultCompare = null;
+    String extension = null;
 
     private JButton addFirstImage = new JButton("Add First Image");
     private JLabel label1 = new JLabel("Add image");
@@ -33,6 +33,7 @@ public class MainFrame extends JFrame {
     private JButton clearSecondImage = new JButton("Clear Second Image");
 
     private JButton compareImages = new JButton("Compare");
+    private JButton cleanAll = new JButton("clean All");
 
 
     public MainFrame(){
@@ -70,7 +71,15 @@ public class MainFrame extends JFrame {
         container.add(box1);
         container.add(box2);
         compareImages.addActionListener(new CompareImagesListener());
-        container.add(compareImages);
+        this.cleanAll.addActionListener(new CleanAllListener());
+        Box box3 = new Box(BoxLayout.Y_AXIS);
+        box3.add(Box.createVerticalStrut(10));
+        box3.add(compareImages);
+        box3.add(Box.createVerticalStrut(10));
+        box3.add(this.cleanAll);
+        box3.add(Box.createVerticalStrut(10));
+        box3.setBorder(new TitledBorder("Action"));
+        container.add(box3);
 
         this.setPreferredSize(new Dimension(440, 180));
         this.pack();
@@ -124,6 +133,26 @@ public class MainFrame extends JFrame {
             second = clearFile(label2);
         }
     }
+    private class CleanAllListener implements ActionListener {
+       public void actionPerformed(ActionEvent e) {
+           first = null;
+           second = null;
+
+           label1.setText("Add image");
+           label2.setText("Add image");
+
+            File file1 = new File("first." + extension);
+            File file2 = new File("second." + extension);
+            File file3 = new File("CreateFiled." + extension);
+            File file4 = new File("result." + extension);
+            File file5 = new File("rez." + extension);
+            file1.delete();
+            file2.delete();
+            file3.delete();
+            file4.delete();
+            file5.delete();
+        }
+    }
 
     private class CompareImagesListener implements ActionListener {
         @Override
@@ -131,33 +160,38 @@ public class MainFrame extends JFrame {
             if(first == null || second == null){
                 Extra.showError("One or more files are not selected!", "Select file error");
             }else{
-                BufferedImage firstInNewSize = imageNewSize(getBufferedImage(first), commonImageSizes(getBufferedImage(first), getBufferedImage(second)), "first", getFileExtension(first));
-                BufferedImage secondInNewSize = imageNewSize(getBufferedImage(second), commonImageSizes(getBufferedImage(second), getBufferedImage(first)), "second", getFileExtension(first));
 
-                BufferedImage filed = imageNewSize(getBufferedImage(second), commonImageSizes(getBufferedImage(second), getBufferedImage(first)), "CreateFiled", getFileExtension(first));
+                extension = WorkerWithImages.getFileExtension(WorkerWithImages.smallerImage(first, second));
+
+                BufferedImage firstInNewSize = imageNewSize(getBufferedImage(first), commonImageSizes(getBufferedImage(first), getBufferedImage(second)), "first", "png");
+                BufferedImage secondInNewSize = imageNewSize(getBufferedImage(second), commonImageSizes(getBufferedImage(second), getBufferedImage(first)), "second", "png");
+
+                BufferedImage filed = imageNewSize(getBufferedImage(second), commonImageSizes(getBufferedImage(second), getBufferedImage(first)), "CreateFiled", "png");
                 filed = cleanFiled(filed);
 
-                BufferedImage result = imageNewSize(getBufferedImage(second), commonImageSizes(getBufferedImage(second), getBufferedImage(first)), "result", getFileExtension(first));
+                BufferedImage result = imageNewSize(getBufferedImage(second), commonImageSizes(getBufferedImage(second), getBufferedImage(first)), "result", "png");
 
                 ForCirculating massPixels[][] = WorkerWithImages.compareImagesByPixels(firstInNewSize, secondInNewSize, filed);
 
 
                 result = WorkerWithImages.drawLines(WorkerWithImages.composePixels(massPixels), result);
-
+                BufferedImage  file = WorkerWithImages.getBufferedImage(WorkerWithImages.smallerImage(first, second));
+                int[] size = new int[]{file.getWidth(),file.getHeight()};
+                result = WorkerWithImages.imageNewSize(result, size, "rez", extension);
+                resultCompare = new File("rez."+extension);
+                /*
                 try {
-                    ImageIO.write(result, getFileExtension(first), new File("filed.png"));
                     ImageIO.write(result, getFileExtension(first), new File("rez.png"));
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
-
-                ImageFrame.expansion = getFileExtension(first);
+                */
+                ImageFrame.expansion = extension;
                 ImageFrame.addInJLable(new File("rez.png"));
-                ImageFrame.fileRez = second;
                 ImageFrame.bf = result;
+                ImageFrame.path = WorkerWithImages.getFilePath(WorkerWithImages.smallerImage(first, second));
 
-                ImageFrame imageFrame = new ImageFrame();
-
+                new ImageFrame();
             }
         }
     }

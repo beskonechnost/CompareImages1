@@ -9,11 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-
-import static main.fromImge.WorkerWithImages.getFileExtension;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Created by Андрей on 17.09.2017.
@@ -21,7 +19,7 @@ import static main.fromImge.WorkerWithImages.getFileExtension;
 public class ImageFrame extends JFrame{
 
     public static String expansion = null;
-    public static File fileRez = null;
+    public static String path = null;
     public static BufferedImage bf = null;
 
 
@@ -54,7 +52,8 @@ public class ImageFrame extends JFrame{
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                ImageIO.write(bf, expansion, fileRez);
+                Calendar c = new GregorianCalendar();
+                ImageIO.write(bf, expansion, new File(path+"result_"+c.get(Calendar.DAY_OF_MONTH)+"-"+c.get(Calendar.MONTH)+"__"+c.get(Calendar.HOUR)+"-"+c.get(Calendar.MINUTE)+"."+expansion));
                 JDialog jd = new JDialog();
                 JOptionPane.showMessageDialog(jd,
                         "Success",
