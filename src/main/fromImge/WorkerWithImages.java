@@ -161,32 +161,19 @@ public class WorkerWithImages {
                 if (right > col - 1) right = col - 1;
 
                 if(forCirculatings[i][j].isPixelIsNotEmpty() && !forCirculatings[i][j].isPixelProcessed()){
-                    int count = ForCirculating.count++;
-                    int count1 = -1;
+
                     forCirculatings[i][j].setPixelProcessed(true);
-                    forCirculatings[i][j].setPixelEntersAnotherPath(count);
+                    forCirculatings[i][j].setPixelEntersAnotherPath(1);
                     for (int ii = hig; ii <= bot; ii++) {
                         for (int jj = left; jj <= right; jj++) {
                             if(forCirculatings[ii][jj].getPixelEntersAnotherPath()==0){
-                                forCirculatings[ii][jj].setPixelEntersAnotherPath(count);
+                                forCirculatings[ii][jj].setPixelEntersAnotherPath(1);
                                 forCirculatings[ii][jj].setPixelProcessed(true);
                             }
+
                             if(forCirculatings[ii][jj].getPixelEntersAnotherPath()==1){
-                                forCirculatings[ii][jj].setPixelEntersAnotherPath(count);
+                                forCirculatings[ii][jj].setPixelEntersAnotherPath(1);
                             }
-
-                            if(forCirculatings[ii][jj].getPixelEntersAnotherPath()>1){
-                                count1 = forCirculatings[ii][jj].getPixelEntersAnotherPath();
-                                for (int iii = 0; iii < row; iii++) {
-                                    for (int jjj = 0; jjj < col; jjj++) {
-                                        if(forCirculatings[iii][jjj].getPixelEntersAnotherPath()==count1){
-                                            forCirculatings[iii][jjj].setPixelEntersAnotherPath(count);
-                                        }
-                                    }
-                                }
-                            }
-
-
                         }
                     }
 
@@ -194,56 +181,135 @@ public class WorkerWithImages {
                 }
             }
         }
-        /*
-        List<Integer> groupsInImage = new ArrayList<>();
+        //Selecting rows without distinction
+        for(int i = 0; i<row; i++){
+            boolean flag = true;
+            for (int j = 0; j < col; j++) {
+                if(forCirculatings[i][j].getPixelEntersAnotherPath()==1){
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag){
+                for (int j = 0; j < col; j++) {
+                    forCirculatings[i][j].setPixelEntersAnotherPath(2);
+                    forCirculatings[i][j].setPixelTrue(true);
+                }
+            }
+
+        }
+        //Selecting column without distinction
+        for(int j = 0; j<col; j++){
+            boolean flag = true;
+            for(int i = 0; i<row; i++){
+                if(forCirculatings[i][j].getPixelEntersAnotherPath()==1){
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag){
+                for(int i = 0; i<row; i++){
+                    if(forCirculatings[i][j].getPixelEntersAnotherPath()==2) {
+                        forCirculatings[i][j].setPixelEntersAnotherPath(4);
+                        forCirculatings[i][j].setPixelTrue(true);
+                    }
+                    if(forCirculatings[i][j].getPixelEntersAnotherPath()==0) {
+                        forCirculatings[i][j].setPixelEntersAnotherPath(3);
+                        forCirculatings[i][j].setPixelTrue(true);
+                    }
+                }
+            }
+        }
+
+        for(int i = 0; i<row; i++){
+            if(forCirculatings[i][0].getPixelEntersAnotherPath()==2 || forCirculatings[i][0].getPixelEntersAnotherPath()==4){
+                continue;
+            }else{
+                for(int j = 0; j < col; j++) {
+                    if(forCirculatings[i][j].getPixelEntersAnotherPath() == 3) {
+                        continue;
+                    }
+                    if(!forCirculatings[i][j].isPixelTrue()){
+                        int stopCol = col - 1;
+                        for (int startCol = j; startCol < col; startCol++) {
+                            if (forCirculatings[i][startCol].getPixelEntersAnotherPath() == 3) {
+                                stopCol = startCol - 1;
+                                break;
+                            }
+                        }
+                        boolean distinction = false;
+                        for (int startCol = j; startCol <= stopCol; startCol++) {
+                            if (forCirculatings[i][startCol].getPixelEntersAnotherPath() == 1) {
+                                distinction = true;
+                                break;
+                            }
+                        }
+
+                        int stopRow = row - 1;
+                        for (int startRow = i; startRow < row; startRow++) {
+                            if (forCirculatings[startRow][j].getPixelEntersAnotherPath() == 2) {
+                                stopRow = startRow - 1;
+                                break;
+                            }
+                        }
+
+                        if (!distinction) {
+                            for (int startRow = i; startRow <= stopRow; startRow++) {
+                                for (int startCol = j; startCol <= stopCol; startCol++) {
+                                    forCirculatings[startRow][startCol].setPixelEntersAnotherPath(3);
+                                    forCirculatings[startRow][startCol].setPixelTrue(true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
-                int g = 0;
-                if (forCirculatings[i][j].getPixelEntersAnotherPath() > 1) {
-                    g = forCirculatings[i][j].getPixelEntersAnotherPath();
-                }
-                boolean f = true;
-                for(int k : groupsInImage) {
-                    if(k==g || g==0){
-                        f = false;
-                    }
-                }
-                if(f)groupsInImage.add(g);
-            }
-        }
-
-        for(int k : groupsInImage) {
-            for (int i = 0; i < row; i++) {
-                for (int j = 0; j < col; j++) {
-
-                    int hig = i - 1;
-                    if (hig < 0) hig = 0;
-                    int bot = i + 1;
-                    if (bot > row - 1) bot = row - 1;
-                    int left = j - 1;
-                    if (left < 0) left = 0;
-                    int right = j + 1;
-                    if (right > col - 1) right = col - 1;
-
-                    for (int ii = hig; ii <= bot; ii++) {
-                        for (int jj = left; jj <= right; jj++) {
-                            if(forCirculatings[ii][jj].getPixelEntersAnotherPath()!=0 && forCirculatings[ii][jj].getPixelEntersAnotherPath()!=k){
-                                int count1 = forCirculatings[ii][jj].getPixelEntersAnotherPath();
-                                for (int iii = 0; iii < row; iii++) {
-                                    for (int jjj = 0; jjj < col; jjj++) {
-                                        if(forCirculatings[iii][jjj].getPixelEntersAnotherPath()==count1){
-                                            forCirculatings[iii][jjj].setPixelEntersAnotherPath(k);
-                                        }
-                                    }
-                                }
+                if(!forCirculatings[i][j].isPixelTrue()) {
+                        int stopCol = col - 1;
+                        for (int startCol = j; startCol < col; startCol++) {
+                            if (forCirculatings[i][startCol].getPixelEntersAnotherPath() == 3) {
+                                stopCol = startCol - 1;
+                                break;
                             }
                         }
-                    }
+                        int stopRow = row - 1;
+                        for (int startRow = i; startRow < row; startRow++) {
+                            if (forCirculatings[startRow][j].getPixelEntersAnotherPath() == 2) {
+                                stopRow = startRow - 1;
+                                break;
+                            }
+                        }
+
+                        for (int startRow = i; startRow <= stopRow; startRow++) {
+                            forCirculatings[startRow][j].setPixelEntersAnotherPath(9);
+                            forCirculatings[startRow][j].setPixelTrue(true);
+                            forCirculatings[startRow][stopCol].setPixelEntersAnotherPath(9);
+                            forCirculatings[startRow][stopCol].setPixelTrue(true);
+
+                        }
+
+                        for (int startCol = j; startCol <= stopCol; startCol++) {
+                            forCirculatings[i][startCol].setPixelEntersAnotherPath(9);
+                            forCirculatings[i][startCol].setPixelTrue(true);
+                            forCirculatings[stopRow][startCol].setPixelEntersAnotherPath(9);
+                            forCirculatings[stopRow][startCol].setPixelTrue(true);
+                        }
+
+                        for(int startRow = i; startRow <= stopRow; startRow++){
+                            for (int startCol = j; startCol <= stopCol; startCol++) {
+                                forCirculatings[startRow][startCol].setPixelTrue(true);
+                            }
+                        }
                 }
             }
         }
-        */
-        //test
+
+
+
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
                 System.out.print(forCirculatings[i][j].getPixelEntersAnotherPath());
@@ -253,7 +319,8 @@ public class WorkerWithImages {
 
         return forCirculatings;
     }
-
+    ///////////////////
+    /*
     public static ForCirculating[][] bezel (ForCirculating[][] forCirculatings){
         int wwi = ForCirculating.count;
 
@@ -291,13 +358,13 @@ public class WorkerWithImages {
 
         return forCirculatings;
     }
-
+    */
     public static BufferedImage drawLines (ForCirculating[][] forCirculatings, BufferedImage bf){
         WritableRaster raster = bf.getRaster();
         for(int i = 0; i<raster.getWidth(); i++){
             for(int j = 0; j<raster.getHeight(); j++){
                 int[] pixel = raster.getPixel(i, j, new int[4]);
-                if(forCirculatings[j][i].getPixelEntersAnotherPath()==-1) {
+                if(forCirculatings[j][i].getPixelEntersAnotherPath()==9) {
                     pixel[0] = 255;
                     pixel[1] = 0;
                     pixel[2] = 0;

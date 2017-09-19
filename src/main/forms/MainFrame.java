@@ -142,7 +142,7 @@ public class MainFrame extends JFrame {
                 ForCirculating massPixels[][] = WorkerWithImages.compareImagesByPixels(firstInNewSize, secondInNewSize, filed);
 
 
-                result = WorkerWithImages.drawLines(WorkerWithImages.bezel(WorkerWithImages.composePixels(massPixels)), result);
+                result = WorkerWithImages.drawLines(WorkerWithImages.composePixels(massPixels), result);
 
                 try {
                     ImageIO.write(result, getFileExtension(first), new File("filed.png"));

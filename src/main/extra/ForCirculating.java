@@ -8,6 +8,7 @@ public class ForCirculating {
     public static int count = 2;
 
     private boolean pixelIsNotEmpty;
+    private boolean pixelTrue;
     private boolean pixelProcessed;
 
     private int pixelEntersAnotherPath;
@@ -19,6 +20,7 @@ public class ForCirculating {
 
         this.pixelIsNotEmpty = pixelIsNotEmpty;
         this.pixelProcessed = pixelProcessed;
+        this.pixelTrue = false;
         this.pixelEntersAnotherPath = pixelEntersAnotherPath;
     }
 
@@ -43,4 +45,10 @@ public class ForCirculating {
         this.pixelEntersAnotherPath = pixelEntersAnotherPath;
     }
 
+    public boolean isPixelTrue() {
+        return pixelTrue;
+    }
+    public void setPixelTrue(boolean pixelTrue) {
+        this.pixelTrue = pixelTrue;
+    }
 }
