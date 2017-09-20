@@ -141,10 +141,10 @@ public class MainFrame extends JFrame {
            label1.setText("Add image");
            label2.setText("Add image");
 
-            File file1 = new File("first." + extension);
-            File file2 = new File("second." + extension);
-            File file3 = new File("CreateFiled." + extension);
-            File file4 = new File("result." + extension);
+            File file1 = new File("first.png");
+            File file2 = new File("second.png");
+            File file3 = new File("CreateFiled.png");
+            File file4 = new File("result.png");
             File file5 = new File("rez." + extension);
             file1.delete();
             file2.delete();
@@ -187,7 +187,7 @@ public class MainFrame extends JFrame {
                 }
                 */
                 ImageFrame.expansion = extension;
-                ImageFrame.addInJLable(new File("rez.png"));
+                ImageFrame.addInJLable(new File("rez."+extension));
                 ImageFrame.bf = result;
                 ImageFrame.path = WorkerWithImages.getFilePath(WorkerWithImages.smallerImage(first, second));
 

@@ -4,7 +4,8 @@ import main.extra.Extra;
 import main.extra.ForCirculating;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -96,8 +97,8 @@ public class WorkerWithImages {
         return alignSize;
     }
 
+    /*
     public static BufferedImage imageNewSize(Image bufferedImage, int[] commonSize, String name, String extension){
-
 
         BufferedImage common = new BufferedImage(commonSize[0], commonSize[1], BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = common.createGraphics();
@@ -117,6 +118,47 @@ public class WorkerWithImages {
 
         return bi;
     }
+    */
+    public static BufferedImage imageNewSize(BufferedImage bi, int[] commonSize, String name, String extension) {
+
+        BufferedImage bi2 = null;
+
+        double max=0;
+        int size=0;
+        int ww=commonSize[0]-bi.getWidth();
+        int hh=commonSize[1]-bi.getHeight();
+
+        if (ww<0 || hh<0) {
+            if (ww < hh) {
+                max = commonSize[0];
+                size = bi.getWidth();
+            } else {
+                max = commonSize[1];
+                size = bi.getHeight();
+            }
+            if (size > 0 && size > max) {
+                double trans = 1.0 / (size / max);
+
+                AffineTransform tr = new AffineTransform();
+                tr.scale(trans, trans);
+                AffineTransformOp op = new AffineTransformOp(tr, AffineTransformOp.TYPE_BILINEAR);
+                Double w = new Double(bi.getWidth() * trans);
+                Double h = new Double(bi.getHeight() * trans);
+                bi2 = new BufferedImage(w.intValue(), h.intValue(), bi.getType());
+                op.filter(bi, bi2);
+                try {
+                    ImageIO.write(bi2, extension, new File(name+"."+extension));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return bi2;
+        }else{
+            return bi;
+        }
+    }
+
+
      ///////////////////////////
 
     public static BufferedImage cleanFiled(BufferedImage filed){
@@ -256,17 +298,14 @@ public class WorkerWithImages {
                     }
                     if(!forCirculatings[i][j].isPixelTrue()){
                         int stopCol = col - 1;
+                        boolean distinction = false;
                         for (int startCol = j; startCol < col; startCol++) {
                             if (forCirculatings[i][startCol].getPixelEntersAnotherPath() == 3) {
                                 stopCol = startCol - 1;
                                 break;
                             }
-                        }
-                        boolean distinction = false;
-                        for (int startCol = j; startCol <= stopCol; startCol++) {
-                            if (forCirculatings[i][startCol].getPixelEntersAnotherPath() == 1) {
+                            if(forCirculatings[i][startCol].getPixelEntersAnotherPath() == 1){
                                 distinction = true;
-                                break;
                             }
                         }
 
@@ -281,7 +320,6 @@ public class WorkerWithImages {
                         if (!distinction) {
                             for (int startRow = i; startRow <= stopRow; startRow++) {
                                 for (int startCol = j; startCol <= stopCol; startCol++) {
-                                    forCirculatings[startRow][startCol].setPixelEntersAnotherPath(3);
                                     forCirculatings[startRow][startCol].setPixelTrue(true);
                                 }
                             }
@@ -290,6 +328,7 @@ public class WorkerWithImages {
                 }
             }
         }
+
         //Let's outline the contour zone 9
         for (int i = 0; i < row; i++) {
             for (int j = 0; j < col; j++) {
@@ -343,9 +382,15 @@ public class WorkerWithImages {
             for(int j = 0; j<raster.getHeight(); j++){
                 int[] pixel = raster.getPixel(i, j, new int[4]);
                 if(forCirculatings[j][i].getPixelEntersAnotherPath()==9) {
-                    pixel[0] = 255;
-                    pixel[1] = 0;
-                    pixel[2] = 0;
+                    if(pixel[0]>225){
+                        pixel[0] = 0;
+                        pixel[1] = 0;
+                        pixel[2] = 255;
+                    }else {
+                        pixel[0] = 255;
+                        pixel[1] = 0;
+                        pixel[2] = 0;
+                    }
                 }
                 raster.setPixel(i, j, pixel);
             }

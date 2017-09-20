@@ -9,6 +9,7 @@ public class ForCirculating {
 
     private boolean pixelIsNotEmpty;
     private boolean pixelTrue;
+    private boolean pixelDistinction;
     private boolean pixelProcessed;
 
     private int pixelEntersAnotherPath;
@@ -21,6 +22,7 @@ public class ForCirculating {
         this.pixelIsNotEmpty = pixelIsNotEmpty;
         this.pixelProcessed = pixelProcessed;
         this.pixelTrue = false;
+        this.pixelDistinction = false;
         this.pixelEntersAnotherPath = pixelEntersAnotherPath;
     }
 
@@ -50,5 +52,12 @@ public class ForCirculating {
     }
     public void setPixelTrue(boolean pixelTrue) {
         this.pixelTrue = pixelTrue;
+    }
+
+    public boolean isPixelDistinction() {
+        return pixelDistinction;
+    }
+    public void setPixelDistinction(boolean pixelDistinction) {
+        this.pixelDistinction = pixelDistinction;
     }
 }
