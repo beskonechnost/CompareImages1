@@ -4,6 +4,7 @@ import main.extra.Extra;
 import main.extra.ForCirculating;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
@@ -121,41 +122,24 @@ public class WorkerWithImages {
     */
     public static BufferedImage imageNewSize(BufferedImage bi, int[] commonSize, String name, String extension) {
 
+        int width = commonSize[0];
+        int height = commonSize[1];
+
+        BufferedImage scaledImage = new BufferedImage(width, height, bi.getType());
+        Image im = bi.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+
+        Graphics2D g = scaledImage.createGraphics();
+        g.drawImage(im, null, null);
+
+        File file = new File(name+"."+extension);
         BufferedImage bi2 = null;
-
-        double max=0;
-        int size=0;
-        int ww=commonSize[0]-bi.getWidth();
-        int hh=commonSize[1]-bi.getHeight();
-
-        if (ww<0 || hh<0) {
-            if (ww < hh) {
-                max = commonSize[0];
-                size = bi.getWidth();
-            } else {
-                max = commonSize[1];
-                size = bi.getHeight();
-            }
-            if (size > 0 && size > max) {
-                double trans = 1.0 / (size / max);
-
-                AffineTransform tr = new AffineTransform();
-                tr.scale(trans, trans);
-                AffineTransformOp op = new AffineTransformOp(tr, AffineTransformOp.TYPE_BILINEAR);
-                Double w = new Double(bi.getWidth() * trans);
-                Double h = new Double(bi.getHeight() * trans);
-                bi2 = new BufferedImage(w.intValue(), h.intValue(), bi.getType());
-                op.filter(bi, bi2);
-                try {
-                    ImageIO.write(bi2, extension, new File(name+"."+extension));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            return bi2;
-        }else{
-            return bi;
+        try {
+            ImageIO.write(scaledImage, extension, file);
+            bi2 = ImageIO.read(file);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        return bi2;
     }
 
 
@@ -372,6 +356,13 @@ public class WorkerWithImages {
             }
         }
 
+        for (int i = 0; i < row; i++) {
+            for (int j = 0; j < col; j++) {
+                System.out.print(forCirculatings[i][j].getPixelEntersAnotherPath());
+            }
+            System.out.println("#");
+        }
+
         return forCirculatings;
     }
     ///////////////////
@@ -382,15 +373,9 @@ public class WorkerWithImages {
             for(int j = 0; j<raster.getHeight(); j++){
                 int[] pixel = raster.getPixel(i, j, new int[4]);
                 if(forCirculatings[j][i].getPixelEntersAnotherPath()==9) {
-                    if(pixel[0]>225){
-                        pixel[0] = 0;
-                        pixel[1] = 0;
-                        pixel[2] = 255;
-                    }else {
                         pixel[0] = 255;
                         pixel[1] = 0;
                         pixel[2] = 0;
-                    }
                 }
                 raster.setPixel(i, j, pixel);
             }
