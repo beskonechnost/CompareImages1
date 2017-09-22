@@ -11,6 +11,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import static main.fromImge.WorkerWithImages.*;
 
@@ -128,11 +130,13 @@ public class MainFrame extends JFrame {
         File file3 = new File("CreateFiled.png");
         File file4 = new File("result.png");
         File file5 = new File("rez." + extension);
+        File file6 = new File("rez.png");
         file1.delete();
         file2.delete();
         file3.delete();
         file4.delete();
         file5.delete();
+        file6.delete();
     }
 
     private class SelectFirstImageListener implements ActionListener {
@@ -190,20 +194,16 @@ public class MainFrame extends JFrame {
                 BufferedImage  file = WorkerWithImages.getBufferedImage(WorkerWithImages.smallerImage(first, second));
                 int[] size = new int[]{file.getWidth(),file.getHeight()};
                 result = WorkerWithImages.imageNewSize(result, size, "rez", extension);
-                resultCompare = new File("rez."+extension);
-                /*
-                try {
-                    ImageIO.write(result, getFileExtension(first), new File("rez.png"));
-                } catch (IOException e1) {
-                    e1.printStackTrace();
-                }
-                */
+                Calendar c = new GregorianCalendar();
+                resultCompare = new File("rez-"+c.get(Calendar.SECOND)+"-"+c.get(Calendar.MINUTE)+"."+extension);
+
                 ImageFrame.expansion = extension;
                 ImageFrame.fileRes = resultCompare;
                 ImageFrame.bf = result;
                 ImageFrame.path = WorkerWithImages.getFilePath(WorkerWithImages.smallerImage(first, second));
 
                 ImageFrame imf = new ImageFrame();
+
             }
         }
     }

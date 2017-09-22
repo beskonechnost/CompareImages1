@@ -26,7 +26,7 @@ public class ImageFrame extends JFrame{
     public static File fileRes = null;
 
 
-    private static JLabel jlabel = new JLabel();
+    private JLabel jlabel = new JLabel();
     private  JButton saveButton = new JButton("Save file with differences");
 
     public ImageFrame(){
@@ -94,7 +94,7 @@ public class ImageFrame extends JFrame{
         this.setVisible(true);
     }
 
-    public static void addInJLable(File file){
+    public void addInJLable(File file){
         jlabel.setIcon(new ImageIcon(file.toString()));
     }
 
