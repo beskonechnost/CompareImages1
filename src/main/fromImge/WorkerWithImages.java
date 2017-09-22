@@ -5,8 +5,6 @@ import main.extra.ForCirculating;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.File;
@@ -98,48 +96,26 @@ public class WorkerWithImages {
         return alignSize;
     }
 
-    /*
-    public static BufferedImage imageNewSize(Image bufferedImage, int[] commonSize, String name, String extension){
-
-        BufferedImage common = new BufferedImage(commonSize[0], commonSize[1], BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = common.createGraphics();
-        graphics.drawImage(bufferedImage, 0, 0, commonSize[0], commonSize[1], null);
-        graphics.dispose();
-        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-
-        BufferedImage bi = null;
-
-        try {
-            ImageIO.write(common, extension, new File(name + "." + extension));
-            bi = ImageIO.read(new File(name + "." + extension));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return bi;
-    }
-    */
-    public static BufferedImage imageNewSize(BufferedImage bi, int[] commonSize, String name, String extension) {
+    public static BufferedImage imageNewSize(BufferedImage bufferedImage, int[] commonSize, String name, String extension) {
 
         int width = commonSize[0];
         int height = commonSize[1];
 
-        BufferedImage scaledImage = new BufferedImage(width, height, bi.getType());
-        Image im = bi.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        BufferedImage scaledImage = new BufferedImage(width, height, bufferedImage.getType());
+        Image im = bufferedImage.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 
         Graphics2D g = scaledImage.createGraphics();
         g.drawImage(im, null, null);
 
         File file = new File(name+"."+extension);
-        BufferedImage bi2 = null;
+        BufferedImage bufferedImage2 = null;
         try {
             ImageIO.write(scaledImage, extension, file);
-            bi2 = ImageIO.read(file);
+            bufferedImage2 = ImageIO.read(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            Extra.showError("File error/Select other file", "File Error");
         }
-        return bi2;
+        return bufferedImage2;
     }
 
 
@@ -288,9 +264,9 @@ public class WorkerWithImages {
                                 stopCol = startCol - 1;
                                 break;
                             }
-                            if(forCirculatings[i][startCol].getPixelEntersAnotherPath() == 1){
-                                distinction = true;
-                            }
+                            //if(forCirculatings[i][startCol].getPixelEntersAnotherPath() == 1){
+                            //    distinction = true;
+                            //}
                         }
 
                         int stopRow = row - 1;
@@ -298,6 +274,14 @@ public class WorkerWithImages {
                             if (forCirculatings[startRow][j].getPixelEntersAnotherPath() == 2) {
                                 stopRow = startRow - 1;
                                 break;
+                            }
+                        }
+
+                        for(int sr = i; sr<=stopRow; sr++){
+                            for(int sc = j; sc<=stopCol; sc++){
+                                if(forCirculatings[sr][sc].getPixelEntersAnotherPath() == 1){
+                                    distinction = true;
+                                }
                             }
                         }
 
@@ -355,14 +339,6 @@ public class WorkerWithImages {
                 }
             }
         }
-
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < col; j++) {
-                System.out.print(forCirculatings[i][j].getPixelEntersAnotherPath());
-            }
-            System.out.println("#");
-        }
-
         return forCirculatings;
     }
     ///////////////////

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CompareImages:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CompareImages_jar</output-path>
+    <root id="archive" name="CompareImages.jar">
+      <element id="module-output" name="CompareImages" />
+    </root>
+  </artifact>
+</component>

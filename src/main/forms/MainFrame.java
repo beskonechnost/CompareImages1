@@ -19,6 +19,14 @@ import static main.fromImge.WorkerWithImages.*;
  */
 public class MainFrame extends JFrame {
 
+    private static MainFrame instance;
+    public static MainFrame getInstance(){
+        if(instance==null){
+            instance = new MainFrame();
+        }
+        return instance;
+    }
+
     File first = null;
     File second = null;
     File resultCompare = null;
@@ -107,6 +115,25 @@ public class MainFrame extends JFrame {
         label.setText("Add image");
         return file;
     }
+    public void cleanAllAfterWork(){
+        first = null;
+        second = null;
+        resultCompare = null;
+
+        label1.setText("Add image");
+        label2.setText("Add image");
+
+        File file1 = new File("first.png");
+        File file2 = new File("second.png");
+        File file3 = new File("CreateFiled.png");
+        File file4 = new File("result.png");
+        File file5 = new File("rez." + extension);
+        file1.delete();
+        file2.delete();
+        file3.delete();
+        file4.delete();
+        file5.delete();
+    }
 
     private class SelectFirstImageListener implements ActionListener {
         @Override
@@ -133,24 +160,9 @@ public class MainFrame extends JFrame {
             second = clearFile(label2);
         }
     }
-    private class CleanAllListener implements ActionListener {
+    class CleanAllListener implements ActionListener {
        public void actionPerformed(ActionEvent e) {
-           first = null;
-           second = null;
-
-           label1.setText("Add image");
-           label2.setText("Add image");
-
-            File file1 = new File("first.png");
-            File file2 = new File("second.png");
-            File file3 = new File("CreateFiled.png");
-            File file4 = new File("result.png");
-            File file5 = new File("rez." + extension);
-            file1.delete();
-            file2.delete();
-            file3.delete();
-            file4.delete();
-            file5.delete();
+           cleanAllAfterWork();
         }
     }
 
@@ -187,11 +199,11 @@ public class MainFrame extends JFrame {
                 }
                 */
                 ImageFrame.expansion = extension;
-                ImageFrame.addInJLable(new File("rez."+extension));
+                ImageFrame.fileRes = resultCompare;
                 ImageFrame.bf = result;
                 ImageFrame.path = WorkerWithImages.getFilePath(WorkerWithImages.smallerImage(first, second));
 
-                new ImageFrame();
+                ImageFrame imf = new ImageFrame();
             }
         }
     }

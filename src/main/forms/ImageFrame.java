@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +23,7 @@ public class ImageFrame extends JFrame{
     public static String expansion = null;
     public static String path = null;
     public static BufferedImage bf = null;
+    public static File fileRes = null;
 
 
     private static JLabel jlabel = new JLabel();
@@ -29,11 +32,58 @@ public class ImageFrame extends JFrame{
     public ImageFrame(){
         super("Image with differences");
         this.setBounds(150, 150, 1000, 1000);
-        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Object[] options = { "Yes", "No!" };
+                int n = JOptionPane
+                        .showOptionDialog(e.getWindow(), "Are you sure you want to close the window. The file with differences will not be co-ordinated, if you do not press the \"Save\"!",
+                                "Confirm", JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE, null, options,
+                                options[0]);
+                if (n == 0) {
+                    MainFrame.getInstance().cleanAllAfterWork();
+                    jlabel = new JLabel();
+                    e.getWindow().setVisible(false);
+                }
+
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+
+            }
+        });
 
         Container container = this.getContentPane();
         container.setLayout(new BorderLayout());
-
+        addInJLable(fileRes);
         saveButton.addActionListener(new SaveListener());
         container.add(saveButton, BorderLayout.SOUTH);
         container.add(jlabel, BorderLayout.CENTER);
